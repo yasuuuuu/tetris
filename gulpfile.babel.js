@@ -3,8 +3,10 @@ import babel from 'gulp-babel';
 import rename from 'gulp-rename';
 import plumber from 'gulp-plumber';
 
+const srcPath = './javascript/es6/*.es6.js';
+
 gulp.task('babel', () => {
-  gulp.src('./javascript/es6/*.es6.js')
+  gulp.src(srcPath)
     .pipe(plumber())
     .pipe(babel())
     .pipe(rename((path) => {
@@ -14,7 +16,7 @@ gulp.task('babel', () => {
 });
 
 gulp.task('watch', () => {
-  gulp.watch('./javascript/es6/*.es6.js', ['babel']);
+  gulp.watch(srcPath, ['babel']);
 });
 
 gulp.task('default', ['babel', 'watch']);
