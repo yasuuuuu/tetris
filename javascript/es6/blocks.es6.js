@@ -1,35 +1,58 @@
 class Blocks {
-  constructor() {
-    this.BLOCKS = Blocks.blockPatterns();
+  constructor(width, height, ctx) {
+    this.ctx = ctx;
+    this.x = 3;
+    this.y = 0;
+    this.removeMe = false;
     this.setting = {
-      width: 4,
-      height: 4,
+      width,
+      height,
+      cols: 4,
+      rows: 4,
     };
+    this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
   }
 
   newBlocks() {
-    const id = Math.floor(Math.random() * this.BLOCKS.length);
-    const blocks = [];
-    for (let y = 0; y < this.setting.height; y += 1) {
-      blocks[y] = [];
-      for (let x = 0; x < this.setting.width; x += 1) {
-        if (this.BLOCKS[id][y]) {
-          blocks[y][x] = this.BLOCKS[id][y][x];
+    const pattern = [];
+    for (let y = 0; y < this.setting.cols; y += 1) {
+      pattern[y] = [];
+      for (let x = 0; x < this.setting.rows; x += 1) {
+        if (Blocks.blockPatterns()[this.id][y]) {
+          pattern[y][x] = Blocks.blockPatterns()[this.id][y][x];
         } else {
-          blocks[y][x] = 0;
+          pattern[y][x] = 0;
         }
       }
     }
-    return blocks;
+    return pattern;
   }
 
   move() {
-
+    this.y += 1;
   }
 
   draw() {
+    for (let y = 0; y < this.setting.cols; y += 1) {
+      for (let x = 0; x < this.setting.rows; x += 1) {
+        this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
+      }
+    }
+  }
 
+  drawBlock(x, y, block) {
+    if (!block) { return; }
+    this.ctx.fillRect(
+      x * this.setting.width, y * this.setting.height,
+      this.setting.width - 1, this.setting.height - 1,
+    );
+    this.ctx.strokeRect(
+      x * this.setting.width,
+      y * this.setting.height,
+      this.setting.width - 1,
+      this.setting.height - 1,
+    );
   }
 
   static blockPatterns() {

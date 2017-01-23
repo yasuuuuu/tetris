@@ -1,32 +1,40 @@
 class Tetris {
   constructor(id) {
     this.gameObjects = [];
+    this.setting = {
+      width: 300,
+      height: 600,
+      cols: 10,
+      rows: 20,
+    };
     this.initCanvas(id);
-    setInterval(this.play(), 30);
+    this.play();
   }
 
   initCanvas(selector) {
     this.canvas = document.getElementById(selector);
-    this.canvas.width = 300;
-    this.canvas.height = 600;
+    this.canvas.width = this.setting.width;
+    this.canvas.height = this.setting.height;
     this.ctx = this.canvas.getContext('2d');
     this.drawBackground();
   }
 
   play() {
-    const gameObjectsFresh = [];
+    setInterval(() => {
+      const gameObjectsFresh = [];
 
-    this.handleGame();
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawBackground();
-    this.gameObjects.forEach((gameObject) => {
-      gameObject.move();
-      gameObject.draw();
-      if (gameObject.removeMe === false) {
-        gameObjectsFresh.push(gameObject);
-      }
-    });
-    this.gameObjects = gameObjectsFresh;
+      this.handleGame();
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawBackground();
+      this.gameObjects.forEach((gameObject) => {
+        gameObject.move();
+        gameObject.draw();
+        if (gameObject.removeMe === false) {
+          gameObjectsFresh.push(gameObject);
+        }
+      });
+      this.gameObjects = gameObjectsFresh;
+    }, 500);
   }
 
   drawBackground() {
@@ -36,7 +44,10 @@ class Tetris {
 
   handleGame() {
     if (this.gameObjects.length) { return; }
-    const blocks = new Blocks();
+    const blocks = new Blocks(
+      this.setting.width / this.setting.cols,
+      this.setting.height / this.setting.rows, this.ctx,
+    );
     this.gameObjects.push(blocks);
   }
 }
