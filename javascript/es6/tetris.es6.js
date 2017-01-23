@@ -22,9 +22,7 @@ class Tetris {
   play() {
     setInterval(() => {
       const gameObjectsFresh = [];
-
       this.handleGame();
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.drawBackground();
       this.gameObjects.forEach((gameObject) => {
         gameObject.move();
@@ -38,8 +36,9 @@ class Tetris {
   }
 
   drawBackground() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = '#000';
-    this.ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
   }
 
   handleGame() {
@@ -47,6 +46,8 @@ class Tetris {
     const blocks = new Blocks(
       this.setting.width / this.setting.cols,
       this.setting.height / this.setting.rows, this.ctx,
+      this.drawBackground,
+      this,
     );
     this.gameObjects.push(blocks);
   }

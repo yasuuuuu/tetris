@@ -1,8 +1,8 @@
 class Blocks {
-  constructor(width, height, ctx) {
+  constructor(width, height, ctx, drawBackground, callingClass) {
     this.ctx = ctx;
     this.x = 3;
-    this.y = 0;
+    this.y = -1;
     this.removeMe = false;
     this.setting = {
       width,
@@ -10,8 +10,10 @@ class Blocks {
       cols: 4,
       rows: 4,
     };
+    this.drawBackground = drawBackground.bind(callingClass);
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
+    this.setKeyEvent();
   }
 
   newBlocks() {
@@ -54,6 +56,22 @@ class Blocks {
       this.setting.height - 1,
     );
   }
+
+  setKeyEvent() {
+    document.body.onkeydown = (e) => {
+      switch (e.keyCode) {
+        case 37:
+          this.x -= 1;
+          break;
+        case 39:
+          this.x += 1;
+          break;
+      }
+      this.drawBackground();
+      this.draw();
+    };
+  }
+
 
   static blockPatterns() {
     const patterns = [

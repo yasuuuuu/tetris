@@ -5,12 +5,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Blocks = function () {
-  function Blocks(width, height, ctx) {
+  function Blocks(width, height, ctx, drawBackground, callingClass) {
     _classCallCheck(this, Blocks);
 
     this.ctx = ctx;
     this.x = 3;
-    this.y = 0;
+    this.y = -1;
     this.removeMe = false;
     this.setting = {
       width: width,
@@ -18,8 +18,10 @@ var Blocks = function () {
       cols: 4,
       rows: 4
     };
+    this.drawBackground = drawBackground.bind(callingClass);
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
+    this.setKeyEvent();
   }
 
   _createClass(Blocks, [{
@@ -60,6 +62,24 @@ var Blocks = function () {
       }
       this.ctx.fillRect(x * this.setting.width, y * this.setting.height, this.setting.width - 1, this.setting.height - 1);
       this.ctx.strokeRect(x * this.setting.width, y * this.setting.height, this.setting.width - 1, this.setting.height - 1);
+    }
+  }, {
+    key: 'setKeyEvent',
+    value: function setKeyEvent() {
+      var _this = this;
+
+      document.body.onkeydown = function (e) {
+        switch (e.keyCode) {
+          case 37:
+            _this.x -= 1;
+            break;
+          case 39:
+            _this.x += 1;
+            break;
+        }
+        _this.drawBackground();
+        _this.draw();
+      };
     }
   }], [{
     key: 'blockPatterns',
@@ -103,29 +123,28 @@ var Tetris = function () {
   }, {
     key: 'play',
     value: function play() {
-      var _this = this;
+      var _this2 = this;
 
       setInterval(function () {
         var gameObjectsFresh = [];
-
-        _this.handleGame();
-        _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-        _this.drawBackground();
-        _this.gameObjects.forEach(function (gameObject) {
+        _this2.handleGame();
+        _this2.drawBackground();
+        _this2.gameObjects.forEach(function (gameObject) {
           gameObject.move();
           gameObject.draw();
           if (gameObject.removeMe === false) {
             gameObjectsFresh.push(gameObject);
           }
         });
-        _this.gameObjects = gameObjectsFresh;
+        _this2.gameObjects = gameObjectsFresh;
       }, 500);
     }
   }, {
     key: 'drawBackground',
     value: function drawBackground() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = '#000';
-      this.ctx.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
     }
   }, {
     key: 'handleGame',
@@ -133,7 +152,7 @@ var Tetris = function () {
       if (this.gameObjects.length) {
         return;
       }
-      var blocks = new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx);
+      var blocks = new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground, this);
       this.gameObjects.push(blocks);
     }
   }]);
