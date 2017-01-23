@@ -4,6 +4,52 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var Blocks = function () {
+  function Blocks() {
+    _classCallCheck(this, Blocks);
+
+    this.BLOCKS = Blocks.blockPatterns();
+    this.setting = {
+      width: 4,
+      height: 4
+    };
+    this.pattern = this.newBlocks();
+  }
+
+  _createClass(Blocks, [{
+    key: 'newBlocks',
+    value: function newBlocks() {
+      var id = Math.floor(Math.random() * this.BLOCKS.length);
+      var blocks = [];
+      for (var y = 0; y < this.setting.height; y += 1) {
+        blocks[y] = [];
+        for (var x = 0; x < this.setting.width; x += 1) {
+          if (this.BLOCKS[id][y]) {
+            blocks[y][x] = this.BLOCKS[id][y][x];
+          } else {
+            blocks[y][x] = 0;
+          }
+        }
+      }
+      return blocks;
+    }
+  }, {
+    key: 'move',
+    value: function move() {}
+  }, {
+    key: 'draw',
+    value: function draw() {}
+  }], [{
+    key: 'blockPatterns',
+    value: function blockPatterns() {
+      var patterns = [[[1, 1, 1, 1], [0, 0, 0, 0]], [[0, 1, 1, 0], [0, 1, 1, 0]], [[0, 1, 1, 0], [1, 1, 0, 0]], [[1, 1, 0, 0], [0, 1, 1, 0]], [[1, 0, 0, 0], [1, 1, 1, 0]], [[0, 0, 1, 0], [1, 1, 1, 0]], [[0, 1, 0, 0], [1, 1, 1, 0]]];
+      return patterns;
+    }
+  }]);
+
+  return Blocks;
+}();
+
 window.onload = function () {
   new Tetris('field');
 };
@@ -52,7 +98,11 @@ var Tetris = function () {
   }, {
     key: 'handleGame',
     value: function handleGame() {
-      //  ゲームの処理を書く
+      if (this.gameObjects.length) {
+        return;
+      }
+      var blocks = new Blocks();
+      this.gameObjects.push(blocks);
     }
   }]);
 

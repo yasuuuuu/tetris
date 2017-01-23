@@ -35,6 +35,8 @@ class Tetris {
   }
 
   handleGame() {
-  //  ゲームの処理を書く
+    if (this.gameObjects.length) { return; }
+    const blocks = new Blocks();
+    this.gameObjects.push(blocks);
   }
 }
