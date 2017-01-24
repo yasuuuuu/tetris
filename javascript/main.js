@@ -5,7 +5,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Blocks = function () {
-  function Blocks(ctx, width, height, fieldCols, fieldRows, drawBackground) {
+  function Blocks(ctx, width, height, fieldCols, fieldRows, drawAll) {
     _classCallCheck(this, Blocks);
 
     this.ctx = ctx;
@@ -19,7 +19,7 @@ var Blocks = function () {
       fieldCols: fieldCols,
       fieldRows: fieldRows
     };
-    this.drawBackground = drawBackground;
+    this.drawAll = drawAll;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
     this.setKeyEvent();
@@ -109,8 +109,7 @@ var Blocks = function () {
           default:
             break;
         }
-        _this.drawBackground();
-        _this.draw();
+        _this.drawAll();
       };
     }
   }, {
@@ -159,12 +158,11 @@ var FieldBlocks = function () {
   }, {
     key: 'draw',
     value: function draw() {
-      console.log('test');
-      console.log(this.pattern);
-      for (var y = 0; y < this.setting.cols; y += 1) {
-        for (var x = 0; y < this.setting.rows; x += 1) {
-          // console.log(this.pattern[y][x]);
-          this.drawBlock(x, y, this.pattern[y][x]);
+      for (var y = 0; y < this.setting.rows; y += 1) {
+        for (var x = 0; x < this.setting.cols; x += 1) {
+          if (this.pattern[y]) {
+            this.drawBlock(x, y, this.pattern[y][x]);
+          }
         }
       }
     }
@@ -213,13 +211,13 @@ var Tetris = function () {
     value: function initGameObjects() {
       this.gameObjects = {
         blocks: this.newBlocks(),
-        fieldBlocks: new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.cols, this.rows)
+        fieldBlocks: new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows)
       };
     }
   }, {
     key: 'newBlocks',
     value: function newBlocks() {
-      return new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawBackground.bind(this));
+      return new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawAll.bind(this));
     }
   }, {
     key: 'play',
@@ -236,6 +234,16 @@ var Tetris = function () {
       }, 500);
     }
   }, {
+    key: 'drawAll',
+    value: function drawAll() {
+      var _this3 = this;
+
+      this.drawBackground();
+      Object.keys(this.gameObjects).forEach(function (key) {
+        _this3.gameObjects[key].draw();
+      });
+    }
+  }, {
     key: 'drawBackground',
     value: function drawBackground() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -245,19 +253,16 @@ var Tetris = function () {
   }, {
     key: 'fixBlocks',
     value: function fixBlocks() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.gameObjects.blocks.canMove(0, 1)) {
         return;
       }
       this.gameObjects.blocks.pattern.forEach(function (cols, y) {
-        // console.log('cols: ' + cols);
-        // console.log('y: ' + y);
-        // console.log('this.y: ' + this.gameObjects.blocks.y);
-        _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y] = _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y] || [];
+        _this4.gameObjects.fieldBlocks.pattern[y + _this4.gameObjects.blocks.y] = _this4.gameObjects.fieldBlocks.pattern[y + _this4.gameObjects.blocks.y] || [];
         cols.forEach(function (val, x) {
           if (val) {
-            _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y][x + _this3.gameObjects.blocks.x] = _this3.gameObjects.blocks.pattern[y][x];
+            _this4.gameObjects.fieldBlocks.pattern[y + _this4.gameObjects.blocks.y][x + _this4.gameObjects.blocks.x] = _this4.gameObjects.blocks.pattern[y][x];
           }
         });
       });

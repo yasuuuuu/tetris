@@ -14,12 +14,11 @@ class FieldBlocks {
   }
 
   draw() {
-    console.log('test');
-    console.log(this.pattern);
-    for (let y = 0; y < this.setting.cols; y += 1) {
-      for (let x = 0; y < this.setting.rows; x += 1) {
-        // console.log(this.pattern[y][x]);
-        this.drawBlock(x, y, this.pattern[y][x]);
+    for (let y = 0; y < this.setting.rows; y += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
+        if (this.pattern[y]) {
+          this.drawBlock(x, y, this.pattern[y][x]);
+        }
       }
     }
   }

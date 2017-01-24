@@ -1,5 +1,5 @@
 class Blocks {
-  constructor(ctx, width, height, fieldCols, fieldRows, drawBackground) {
+  constructor(ctx, width, height, fieldCols, fieldRows, drawAll) {
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
@@ -11,7 +11,7 @@ class Blocks {
       fieldCols,
       fieldRows,
     };
-    this.drawBackground = drawBackground;
+    this.drawAll = drawAll;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
     this.setKeyEvent();
@@ -87,8 +87,7 @@ class Blocks {
         default:
           break;
       }
-      this.drawBackground();
-      this.draw();
+      this.drawAll();
     };
   }
 

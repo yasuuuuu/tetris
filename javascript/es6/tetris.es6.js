@@ -24,8 +24,8 @@ class Tetris {
         this.ctx,
         this.setting.width / this.setting.cols,
         this.setting.height / this.setting.rows,
-        this.cols,
-        this.rows,
+        this.setting.cols,
+        this.setting.rows,
       ),
     };
   }
@@ -37,7 +37,7 @@ class Tetris {
       this.setting.height / this.setting.rows,
       this.setting.cols,
       this.setting.rows,
-      this.drawBackground.bind(this),
+      this.drawAll.bind(this),
     );
   }
 
@@ -52,6 +52,13 @@ class Tetris {
     }, 500);
   }
 
+  drawAll() {
+    this.drawBackground();
+    Object.keys(this.gameObjects).forEach((key) => {
+      this.gameObjects[key].draw();
+    });
+  }
+
   drawBackground() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = '#000';
@@ -61,13 +68,13 @@ class Tetris {
   fixBlocks() {
     if (this.gameObjects.blocks.canMove(0, 1)) { return; }
     this.gameObjects.blocks.pattern.forEach((cols, y) => {
-      // console.log('cols: ' + cols);
-      // console.log('y: ' + y);
-      // console.log('this.y: ' + this.gameObjects.blocks.y);
-      this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] = this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] || [];
+      this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y]
+        = this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] || [];
       cols.forEach((val, x) => {
         if (val) {
-          this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y][x + this.gameObjects.blocks.x] = this.gameObjects.blocks.pattern[y][x];
+          this.gameObjects.fieldBlocks
+            .pattern[y + this.gameObjects.blocks.y][x + this.gameObjects.blocks.x]
+            = this.gameObjects.blocks.pattern[y][x];
         }
       });
     });
