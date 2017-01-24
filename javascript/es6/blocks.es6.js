@@ -1,16 +1,15 @@
 class Blocks {
-  constructor(width, height, ctx, drawBackground, callingClass) {
+  constructor(width, height, ctx, drawBackground) {
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
-    this.removeMe = false;
     this.setting = {
       width,
       height,
       cols: 4,
       rows: 4,
     };
-    this.drawBackground = drawBackground.bind(callingClass);
+    this.drawBackground = drawBackground;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
     this.setKeyEvent();
@@ -66,6 +65,8 @@ class Blocks {
         case 39:
           this.x += 1;
           break;
+        case 40:
+          this.y += 1;
       }
       this.drawBackground();
       this.draw();

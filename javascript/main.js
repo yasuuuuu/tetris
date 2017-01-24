@@ -5,20 +5,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Blocks = function () {
-  function Blocks(width, height, ctx, drawBackground, callingClass) {
+  function Blocks(width, height, ctx, drawBackground) {
     _classCallCheck(this, Blocks);
 
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
-    this.removeMe = false;
     this.setting = {
       width: width,
       height: height,
       cols: 4,
       rows: 4
     };
-    this.drawBackground = drawBackground.bind(callingClass);
+    this.drawBackground = drawBackground;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
     this.setKeyEvent();
@@ -76,6 +75,8 @@ var Blocks = function () {
           case 39:
             _this.x += 1;
             break;
+          case 40:
+            _this.y += 1;
         }
         _this.drawBackground();
         _this.draw();
@@ -100,7 +101,6 @@ var Tetris = function () {
   function Tetris(id) {
     _classCallCheck(this, Tetris);
 
-    this.gameObjects = [];
     this.setting = {
       width: 300,
       height: 600,
@@ -108,6 +108,7 @@ var Tetris = function () {
       rows: 20
     };
     this.initCanvas(id);
+    this.initGameObjects();
     this.play();
   }
 
@@ -121,22 +122,24 @@ var Tetris = function () {
       this.drawBackground();
     }
   }, {
+    key: 'initGameObjects',
+    value: function initGameObjects() {
+      this.gameObjects = {
+        blocks: new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground.bind(this))
+      };
+    }
+  }, {
     key: 'play',
     value: function play() {
       var _this2 = this;
 
       setInterval(function () {
-        var gameObjectsFresh = [];
-        _this2.handleGame();
         _this2.drawBackground();
-        _this2.gameObjects.forEach(function (gameObject) {
-          gameObject.move();
-          gameObject.draw();
-          if (gameObject.removeMe === false) {
-            gameObjectsFresh.push(gameObject);
-          }
+        Object.keys(_this2.gameObjects).forEach(function (key) {
+          _this2.gameObjects[key].move();
+          _this2.gameObjects[key].draw();
+          _this2.fixBlocks();
         });
-        _this2.gameObjects = gameObjectsFresh;
       }, 500);
     }
   }, {
@@ -152,8 +155,13 @@ var Tetris = function () {
       if (this.gameObjects.length) {
         return;
       }
-      var blocks = new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground, this);
+      var blocks = new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground.bind(this));
       this.gameObjects.push(blocks);
+    }
+  }, {
+    key: 'fixBlocks',
+    value: function fixBlocks() {
+      // if (thi)
     }
   }]);
 

@@ -1,6 +1,5 @@
 class Tetris {
   constructor(id) {
-    this.gameObjects = [];
     this.setting = {
       width: 300,
       height: 600,
@@ -8,6 +7,7 @@ class Tetris {
       rows: 20,
     };
     this.initCanvas(id);
+    this.initGameObjects();
     this.play();
   }
 
@@ -19,19 +19,25 @@ class Tetris {
     this.drawBackground();
   }
 
+  initGameObjects() {
+    this.gameObjects = {
+      blocks: new Blocks(
+        this.setting.width / this.setting.cols,
+        this.setting.height / this.setting.rows,
+        this.ctx,
+        this.drawBackground.bind(this),
+      ),
+    };
+  }
+
   play() {
     setInterval(() => {
-      const gameObjectsFresh = [];
-      this.handleGame();
       this.drawBackground();
-      this.gameObjects.forEach((gameObject) => {
-        gameObject.move();
-        gameObject.draw();
-        if (gameObject.removeMe === false) {
-          gameObjectsFresh.push(gameObject);
-        }
+      Object.keys(this.gameObjects).forEach((key) => {
+        this.gameObjects[key].move();
+        this.gameObjects[key].draw();
+        this.fixBlocks();
       });
-      this.gameObjects = gameObjectsFresh;
     }, 500);
   }
 
@@ -46,9 +52,12 @@ class Tetris {
     const blocks = new Blocks(
       this.setting.width / this.setting.cols,
       this.setting.height / this.setting.rows, this.ctx,
-      this.drawBackground,
-      this,
+      this.drawBackground.bind(this),
     );
     this.gameObjects.push(blocks);
+  }
+
+  fixBlocks() {
+    // if (thi)
   }
 }
