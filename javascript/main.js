@@ -36,8 +36,8 @@ var Blocks = function () {
   }, {
     key: 'draw',
     value: function draw() {
-      for (var y = 0; y < this.setting.cols; y += 1) {
-        for (var x = 0; x < this.setting.rows; x += 1) {
+      for (var y = 0; y < this.setting.rows; y += 1) {
+        for (var x = 0; x < this.setting.cols; x += 1) {
           this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
         }
       }
@@ -46,9 +46,9 @@ var Blocks = function () {
     key: 'newBlocks',
     value: function newBlocks() {
       var pattern = [];
-      for (var y = 0; y < this.setting.cols; y += 1) {
+      for (var y = 0; y < this.setting.rows; y += 1) {
         pattern[y] = [];
-        for (var x = 0; x < this.setting.rows; x += 1) {
+        for (var x = 0; x < this.setting.cols; x += 1) {
           if (Blocks.blockPatterns()[this.id][y]) {
             pattern[y][x] = Blocks.blockPatterns()[this.id][y][x];
           } else {
@@ -70,9 +70,9 @@ var Blocks = function () {
     key: 'rotate',
     value: function rotate() {
       var rotatePattern = [];
-      for (var y = 0; y < this.setting.cols; y += 1) {
+      for (var y = 0; y < this.setting.rows; y += 1) {
         rotatePattern[y] = [];
-        for (var x = 0; x < this.setting.rows; x += 1) {
+        for (var x = 0; x < this.setting.cols; x += 1) {
           rotatePattern[y][x] = this.pattern[x][-y + 3];
         }
       }
@@ -117,8 +117,8 @@ var Blocks = function () {
     value: function canMove(xDir, yDir) {
       var nextX = this.x + xDir;
       var nextY = this.y + yDir;
-      for (var y = 0; y < this.setting.cols; y += 1) {
-        for (var x = 0; x < this.setting.rows; x += 1) {
+      for (var y = 0; y < this.setting.rows; y += 1) {
+        for (var x = 0; x < this.setting.cols; x += 1) {
           if (this.pattern[y][x]) {
             if (nextX + x < 0 || nextX + x >= this.setting.fieldCols || nextY + y >= this.setting.fieldRows) {
               return false;

@@ -23,8 +23,8 @@ class Blocks {
   }
 
   draw() {
-    for (let y = 0; y < this.setting.cols; y += 1) {
-      for (let x = 0; x < this.setting.rows; x += 1) {
+    for (let y = 0; y < this.setting.rows; y += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
         this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
       }
     }
@@ -32,9 +32,9 @@ class Blocks {
 
   newBlocks() {
     const pattern = [];
-    for (let y = 0; y < this.setting.cols; y += 1) {
+    for (let y = 0; y < this.setting.rows; y += 1) {
       pattern[y] = [];
-      for (let x = 0; x < this.setting.rows; x += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
         if (Blocks.blockPatterns()[this.id][y]) {
           pattern[y][x] = Blocks.blockPatterns()[this.id][y][x];
         } else {
@@ -57,9 +57,9 @@ class Blocks {
 
   rotate() {
     const rotatePattern = [];
-    for (let y = 0; y < this.setting.cols; y += 1) {
+    for (let y = 0; y < this.setting.rows; y += 1) {
       rotatePattern[y] = [];
-      for (let x = 0; x < this.setting.rows; x += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
         rotatePattern[y][x] = this.pattern[x][-y + 3];
       }
     }
@@ -94,8 +94,8 @@ class Blocks {
   canMove(xDir, yDir) {
     const nextX = this.x + xDir;
     const nextY = this.y + yDir;
-    for (let y = 0; y < this.setting.cols; y += 1) {
-      for (let x = 0; x < this.setting.rows; x += 1) {
+    for (let y = 0; y < this.setting.rows; y += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
         if (this.pattern[y][x]) {
           if (nextX + x < 0
             || nextX + x >= this.setting.fieldCols
