@@ -8,7 +8,6 @@ class Tetris {
     };
     this.initCanvas(id);
     this.initGameObjects();
-    this.play();
   }
 
   initCanvas(selector) {
@@ -20,15 +19,8 @@ class Tetris {
 
   initGameObjects() {
     this.gameObjects = {
-      blocks: new Blocks(
-        this.ctx,
-        this.setting.width / this.setting.cols,
-        this.setting.height / this.setting.rows,
-        this.setting.cols,
-        this.setting.rows,
-        this.drawBackground.bind(this),
-      ),
-      field: new Field(
+      blocks: this.newBlocks(),
+      fieldBlocks: new FieldBlocks(
         this.ctx,
         this.setting.width / this.setting.cols,
         this.setting.height / this.setting.rows,
@@ -36,6 +28,17 @@ class Tetris {
         this.rows,
       ),
     };
+  }
+
+  newBlocks() {
+    return new Blocks(
+      this.ctx,
+      this.setting.width / this.setting.cols,
+      this.setting.height / this.setting.rows,
+      this.setting.cols,
+      this.setting.rows,
+      this.drawBackground.bind(this),
+    );
   }
 
   play() {
@@ -55,10 +58,19 @@ class Tetris {
     this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
   }
 
-
   fixBlocks() {
-
+    if (this.gameObjects.blocks.canMove(0, 1)) { return; }
+    this.gameObjects.blocks.pattern.forEach((cols, y) => {
+      // console.log('cols: ' + cols);
+      // console.log('y: ' + y);
+      // console.log('this.y: ' + this.gameObjects.blocks.y);
+      this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] = this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] || [];
+      cols.forEach((val, x) => {
+        if (val) {
+          this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y][x + this.gameObjects.blocks.x] = this.gameObjects.blocks.pattern[y][x];
+        }
+      });
+    });
+    this.gameObjects.blocks = this.newBlocks();
   }
-
-
 }

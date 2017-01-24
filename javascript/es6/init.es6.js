@@ -1,3 +1,4 @@
 window.onload = () => {
-  new Tetris('field');
+  const tetris = new Tetris('field');
+  tetris.play();
 };

@@ -17,6 +17,19 @@ class Blocks {
     this.setKeyEvent();
   }
 
+  move() {
+    if (!this.canMove(0, 1)) { return; }
+    this.y += 1;
+  }
+
+  draw() {
+    for (let y = 0; y < this.setting.cols; y += 1) {
+      for (let x = 0; x < this.setting.rows; x += 1) {
+        this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
+      }
+    }
+  }
+
   newBlocks() {
     const pattern = [];
     for (let y = 0; y < this.setting.cols; y += 1) {
@@ -30,19 +43,6 @@ class Blocks {
       }
     }
     return pattern;
-  }
-
-  move() {
-    if (!this.canMove(0, 1)) { return; }
-    this.y += 1;
-  }
-
-  draw() {
-    for (let y = 0; y < this.setting.cols; y += 1) {
-      for (let x = 0; x < this.setting.rows; x += 1) {
-        this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
-      }
-    }
   }
 
   drawBlock(x, y, block) {
@@ -84,6 +84,8 @@ class Blocks {
           if (!this.canMove(0, 1)) { break; }
           this.y += 1;
           break;
+        default:
+          break;
       }
       this.drawBackground();
       this.draw();
@@ -108,7 +110,7 @@ class Blocks {
   }
 
   static blockPatterns() {
-    const patterns = [
+    return [
       [
         [1, 1, 1, 1],
         [0, 0, 0, 0],
@@ -138,6 +140,5 @@ class Blocks {
         [1, 1, 1, 0],
       ],
     ];
-    return patterns;
   }
 }

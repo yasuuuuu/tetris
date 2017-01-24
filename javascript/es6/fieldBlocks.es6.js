@@ -1,4 +1,4 @@
-class Field {
+class FieldBlocks {
   constructor(ctx, blockWidth, blockHeight, cols, rows) {
     this.ctx = ctx;
     this.setting = {
@@ -14,8 +14,11 @@ class Field {
   }
 
   draw() {
+    console.log('test');
+    console.log(this.pattern);
     for (let y = 0; y < this.setting.cols; y += 1) {
       for (let x = 0; y < this.setting.rows; x += 1) {
+        // console.log(this.pattern[y][x]);
         this.drawBlock(x, y, this.pattern[y][x]);
       }
     }

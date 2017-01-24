@@ -26,22 +26,6 @@ var Blocks = function () {
   }
 
   _createClass(Blocks, [{
-    key: 'newBlocks',
-    value: function newBlocks() {
-      var pattern = [];
-      for (var y = 0; y < this.setting.cols; y += 1) {
-        pattern[y] = [];
-        for (var x = 0; x < this.setting.rows; x += 1) {
-          if (Blocks.blockPatterns()[this.id][y]) {
-            pattern[y][x] = Blocks.blockPatterns()[this.id][y][x];
-          } else {
-            pattern[y][x] = 0;
-          }
-        }
-      }
-      return pattern;
-    }
-  }, {
     key: 'move',
     value: function move() {
       if (!this.canMove(0, 1)) {
@@ -57,6 +41,22 @@ var Blocks = function () {
           this.drawBlock(this.x + x, this.y + y, this.pattern[y][x]);
         }
       }
+    }
+  }, {
+    key: 'newBlocks',
+    value: function newBlocks() {
+      var pattern = [];
+      for (var y = 0; y < this.setting.cols; y += 1) {
+        pattern[y] = [];
+        for (var x = 0; x < this.setting.rows; x += 1) {
+          if (Blocks.blockPatterns()[this.id][y]) {
+            pattern[y][x] = Blocks.blockPatterns()[this.id][y][x];
+          } else {
+            pattern[y][x] = 0;
+          }
+        }
+      }
+      return pattern;
     }
   }, {
     key: 'drawBlock',
@@ -106,6 +106,8 @@ var Blocks = function () {
             }
             _this.y += 1;
             break;
+          default:
+            break;
         }
         _this.drawBackground();
         _this.draw();
@@ -130,17 +132,16 @@ var Blocks = function () {
   }], [{
     key: 'blockPatterns',
     value: function blockPatterns() {
-      var patterns = [[[1, 1, 1, 1], [0, 0, 0, 0]], [[0, 1, 1, 0], [0, 1, 1, 0]], [[0, 1, 1, 0], [1, 1, 0, 0]], [[1, 1, 0, 0], [0, 1, 1, 0]], [[1, 0, 0, 0], [1, 1, 1, 0]], [[0, 0, 1, 0], [1, 1, 1, 0]], [[0, 1, 0, 0], [1, 1, 1, 0]]];
-      return patterns;
+      return [[[1, 1, 1, 1], [0, 0, 0, 0]], [[0, 1, 1, 0], [0, 1, 1, 0]], [[0, 1, 1, 0], [1, 1, 0, 0]], [[1, 1, 0, 0], [0, 1, 1, 0]], [[1, 0, 0, 0], [1, 1, 1, 0]], [[0, 0, 1, 0], [1, 1, 1, 0]], [[0, 1, 0, 0], [1, 1, 1, 0]]];
     }
   }]);
 
   return Blocks;
 }();
 
-var Field = function () {
-  function Field(ctx, blockWidth, blockHeight, cols, rows) {
-    _classCallCheck(this, Field);
+var FieldBlocks = function () {
+  function FieldBlocks(ctx, blockWidth, blockHeight, cols, rows) {
+    _classCallCheck(this, FieldBlocks);
 
     this.ctx = ctx;
     this.setting = {
@@ -152,14 +153,17 @@ var Field = function () {
     this.pattern = [];
   }
 
-  _createClass(Field, [{
+  _createClass(FieldBlocks, [{
     key: 'move',
     value: function move() {}
   }, {
     key: 'draw',
     value: function draw() {
+      console.log('test');
+      console.log(this.pattern);
       for (var y = 0; y < this.setting.cols; y += 1) {
         for (var x = 0; y < this.setting.rows; x += 1) {
+          // console.log(this.pattern[y][x]);
           this.drawBlock(x, y, this.pattern[y][x]);
         }
       }
@@ -174,11 +178,12 @@ var Field = function () {
     }
   }]);
 
-  return Field;
+  return FieldBlocks;
 }();
 
 window.onload = function () {
-  new Tetris('field');
+  var tetris = new Tetris('field');
+  tetris.play();
 };
 
 var Tetris = function () {
@@ -193,7 +198,6 @@ var Tetris = function () {
     };
     this.initCanvas(id);
     this.initGameObjects();
-    this.play();
   }
 
   _createClass(Tetris, [{
@@ -208,9 +212,14 @@ var Tetris = function () {
     key: 'initGameObjects',
     value: function initGameObjects() {
       this.gameObjects = {
-        blocks: new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawBackground.bind(this)),
-        field: new Field(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.cols, this.rows)
+        blocks: this.newBlocks(),
+        fieldBlocks: new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.cols, this.rows)
       };
+    }
+  }, {
+    key: 'newBlocks',
+    value: function newBlocks() {
+      return new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawBackground.bind(this));
     }
   }, {
     key: 'play',
@@ -235,7 +244,25 @@ var Tetris = function () {
     }
   }, {
     key: 'fixBlocks',
-    value: function fixBlocks() {}
+    value: function fixBlocks() {
+      var _this3 = this;
+
+      if (this.gameObjects.blocks.canMove(0, 1)) {
+        return;
+      }
+      this.gameObjects.blocks.pattern.forEach(function (cols, y) {
+        // console.log('cols: ' + cols);
+        // console.log('y: ' + y);
+        // console.log('this.y: ' + this.gameObjects.blocks.y);
+        _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y] = _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y] || [];
+        cols.forEach(function (val, x) {
+          if (val) {
+            _this3.gameObjects.fieldBlocks.pattern[y + _this3.gameObjects.blocks.y][x + _this3.gameObjects.blocks.x] = _this3.gameObjects.blocks.pattern[y][x];
+          }
+        });
+      });
+      this.gameObjects.blocks = this.newBlocks();
+    }
   }]);
 
   return Tetris;
