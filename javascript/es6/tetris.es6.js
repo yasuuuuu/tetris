@@ -22,10 +22,17 @@ class Tetris {
   initGameObjects() {
     this.gameObjects = {
       blocks: new Blocks(
+        this.ctx,
         this.setting.width / this.setting.cols,
         this.setting.height / this.setting.rows,
-        this.ctx,
         this.drawBackground.bind(this),
+      ),
+      field: new Field(
+        this.ctx,
+        this.setting.width / this.setting.cols,
+        this.setting.height / this.setting.rows,
+        this.cols,
+        this.rows,
       ),
     };
   }
@@ -45,16 +52,6 @@ class Tetris {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = '#000';
     this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
-  }
-
-  handleGame() {
-    if (this.gameObjects.length) { return; }
-    const blocks = new Blocks(
-      this.setting.width / this.setting.cols,
-      this.setting.height / this.setting.rows, this.ctx,
-      this.drawBackground.bind(this),
-    );
-    this.gameObjects.push(blocks);
   }
 
   fixBlocks() {

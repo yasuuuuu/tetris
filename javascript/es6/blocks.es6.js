@@ -1,5 +1,5 @@
 class Blocks {
-  constructor(width, height, ctx, drawBackground) {
+  constructor(ctx, width, height, drawBackground) {
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
@@ -45,10 +45,6 @@ class Blocks {
   drawBlock(x, y, block) {
     if (!block) { return; }
     this.ctx.fillRect(
-      x * this.setting.width, y * this.setting.height,
-      this.setting.width - 1, this.setting.height - 1,
-    );
-    this.ctx.strokeRect(
       x * this.setting.width,
       y * this.setting.height,
       this.setting.width - 1,
@@ -62,6 +58,9 @@ class Blocks {
         case 37:
           this.x -= 1;
           break;
+        case 38:
+          this.rotate();
+          break;
         case 39:
           this.x += 1;
           break;
@@ -73,6 +72,16 @@ class Blocks {
     };
   }
 
+  rotate() {
+    const rotatePattern = [];
+    for (let y = 0; y < this.setting.cols; y += 1) {
+      rotatePattern[y] = [];
+      for (let x = 0; x < this.setting.rows; x += 1) {
+        rotatePattern[y][x] = this.pattern[x][-y + 3];
+      }
+    }
+    this.pattern = rotatePattern;
+  }
 
   static blockPatterns() {
     const patterns = [

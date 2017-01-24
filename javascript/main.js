@@ -5,7 +5,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Blocks = function () {
-  function Blocks(width, height, ctx, drawBackground) {
+  function Blocks(ctx, width, height, drawBackground) {
     _classCallCheck(this, Blocks);
 
     this.ctx = ctx;
@@ -60,7 +60,6 @@ var Blocks = function () {
         return;
       }
       this.ctx.fillRect(x * this.setting.width, y * this.setting.height, this.setting.width - 1, this.setting.height - 1);
-      this.ctx.strokeRect(x * this.setting.width, y * this.setting.height, this.setting.width - 1, this.setting.height - 1);
     }
   }, {
     key: 'setKeyEvent',
@@ -72,6 +71,9 @@ var Blocks = function () {
           case 37:
             _this.x -= 1;
             break;
+          case 38:
+            _this.rotate();
+            break;
           case 39:
             _this.x += 1;
             break;
@@ -82,6 +84,18 @@ var Blocks = function () {
         _this.draw();
       };
     }
+  }, {
+    key: 'rotate',
+    value: function rotate() {
+      var rotatePattern = [];
+      for (var y = 0; y < this.setting.cols; y += 1) {
+        rotatePattern[y] = [];
+        for (var x = 0; x < this.setting.rows; x += 1) {
+          rotatePattern[y][x] = this.pattern[x][-y + 3];
+        }
+      }
+      this.pattern = rotatePattern;
+    }
   }], [{
     key: 'blockPatterns',
     value: function blockPatterns() {
@@ -91,6 +105,45 @@ var Blocks = function () {
   }]);
 
   return Blocks;
+}();
+
+var Field = function () {
+  function Field(ctx, blockWidth, blockHeight, cols, rows) {
+    _classCallCheck(this, Field);
+
+    this.ctx = ctx;
+    this.setting = {
+      blockWidth: blockWidth,
+      blockHeight: blockHeight,
+      cols: cols,
+      rows: rows
+    };
+    this.pattern = [];
+  }
+
+  _createClass(Field, [{
+    key: 'move',
+    value: function move() {}
+  }, {
+    key: 'draw',
+    value: function draw() {
+      for (var y = 0; y < this.setting.cols; y += 1) {
+        for (var x = 0; y < this.setting.rows; x += 1) {
+          this.drawBlock(x, y, this.pattern[y][x]);
+        }
+      }
+    }
+  }, {
+    key: 'drawBlock',
+    value: function drawBlock(x, y, block) {
+      if (!block) {
+        return;
+      }
+      this.ctx.fillRect(x * this.setting.blockWidth, y * this.setting.blockHeight, this.setting.blockWidth - 1, this.setting.blockHeight - 1);
+    }
+  }]);
+
+  return Field;
 }();
 
 window.onload = function () {
@@ -125,7 +178,8 @@ var Tetris = function () {
     key: 'initGameObjects',
     value: function initGameObjects() {
       this.gameObjects = {
-        blocks: new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground.bind(this))
+        blocks: new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.drawBackground.bind(this)),
+        field: new Field(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.cols, this.rows)
       };
     }
   }, {
@@ -148,15 +202,6 @@ var Tetris = function () {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = '#000';
       this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
-    }
-  }, {
-    key: 'handleGame',
-    value: function handleGame() {
-      if (this.gameObjects.length) {
-        return;
-      }
-      var blocks = new Blocks(this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.ctx, this.drawBackground.bind(this));
-      this.gameObjects.push(blocks);
     }
   }, {
     key: 'fixBlocks',
