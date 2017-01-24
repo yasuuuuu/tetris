@@ -5,7 +5,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Blocks = function () {
-  function Blocks(ctx, width, height, drawBackground) {
+  function Blocks(ctx, width, height, fieldCols, fieldRows, drawBackground) {
     _classCallCheck(this, Blocks);
 
     this.ctx = ctx;
@@ -15,7 +15,9 @@ var Blocks = function () {
       width: width,
       height: height,
       cols: 4,
-      rows: 4
+      rows: 4,
+      fieldCols: fieldCols,
+      fieldRows: fieldRows
     };
     this.drawBackground = drawBackground;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
@@ -42,6 +44,9 @@ var Blocks = function () {
   }, {
     key: 'move',
     value: function move() {
+      if (!this.canMove(0, 1)) {
+        return;
+      }
       this.y += 1;
     }
   }, {
@@ -62,29 +67,6 @@ var Blocks = function () {
       this.ctx.fillRect(x * this.setting.width, y * this.setting.height, this.setting.width - 1, this.setting.height - 1);
     }
   }, {
-    key: 'setKeyEvent',
-    value: function setKeyEvent() {
-      var _this = this;
-
-      document.body.onkeydown = function (e) {
-        switch (e.keyCode) {
-          case 37:
-            _this.x -= 1;
-            break;
-          case 38:
-            _this.rotate();
-            break;
-          case 39:
-            _this.x += 1;
-            break;
-          case 40:
-            _this.y += 1;
-        }
-        _this.drawBackground();
-        _this.draw();
-      };
-    }
-  }, {
     key: 'rotate',
     value: function rotate() {
       var rotatePattern = [];
@@ -95,6 +77,55 @@ var Blocks = function () {
         }
       }
       this.pattern = rotatePattern;
+    }
+  }, {
+    key: 'setKeyEvent',
+    value: function setKeyEvent() {
+      var _this = this;
+
+      document.body.onkeydown = function (e) {
+        switch (e.keyCode) {
+          case 37:
+            if (!_this.canMove(-1, 0)) {
+              break;
+            }
+            _this.x -= 1;
+            break;
+          case 38:
+            _this.rotate();
+            break;
+          case 39:
+            if (!_this.canMove(1, 0)) {
+              break;
+            }
+            _this.x += 1;
+            break;
+          case 40:
+            if (!_this.canMove(0, 1)) {
+              break;
+            }
+            _this.y += 1;
+            break;
+        }
+        _this.drawBackground();
+        _this.draw();
+      };
+    }
+  }, {
+    key: 'canMove',
+    value: function canMove(xDir, yDir) {
+      var nextX = this.x + xDir;
+      var nextY = this.y + yDir;
+      for (var y = 0; y < this.setting.cols; y += 1) {
+        for (var x = 0; x < this.setting.rows; x += 1) {
+          if (this.pattern[y][x]) {
+            if (nextX + x < 0 || nextX + x >= this.setting.fieldCols || nextY + y >= this.setting.fieldRows) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
     }
   }], [{
     key: 'blockPatterns',
@@ -172,13 +203,12 @@ var Tetris = function () {
       this.canvas.width = this.setting.width;
       this.canvas.height = this.setting.height;
       this.ctx = this.canvas.getContext('2d');
-      this.drawBackground();
     }
   }, {
     key: 'initGameObjects',
     value: function initGameObjects() {
       this.gameObjects = {
-        blocks: new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.drawBackground.bind(this)),
+        blocks: new Blocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawBackground.bind(this)),
         field: new Field(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.cols, this.rows)
       };
     }
@@ -205,9 +235,7 @@ var Tetris = function () {
     }
   }, {
     key: 'fixBlocks',
-    value: function fixBlocks() {
-      // if (thi)
-    }
+    value: function fixBlocks() {}
   }]);
 
   return Tetris;

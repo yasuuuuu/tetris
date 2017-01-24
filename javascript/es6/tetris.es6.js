@@ -16,7 +16,6 @@ class Tetris {
     this.canvas.width = this.setting.width;
     this.canvas.height = this.setting.height;
     this.ctx = this.canvas.getContext('2d');
-    this.drawBackground();
   }
 
   initGameObjects() {
@@ -25,6 +24,8 @@ class Tetris {
         this.ctx,
         this.setting.width / this.setting.cols,
         this.setting.height / this.setting.rows,
+        this.setting.cols,
+        this.setting.rows,
         this.drawBackground.bind(this),
       ),
       field: new Field(
@@ -54,7 +55,10 @@ class Tetris {
     this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
   }
 
+
   fixBlocks() {
-    // if (thi)
+
   }
+
+
 }

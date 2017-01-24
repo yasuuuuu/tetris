@@ -11,7 +11,6 @@ class Field {
   }
 
   move() {
-
   }
 
   draw() {

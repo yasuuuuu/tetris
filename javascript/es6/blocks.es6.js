@@ -1,5 +1,5 @@
 class Blocks {
-  constructor(ctx, width, height, drawBackground) {
+  constructor(ctx, width, height, fieldCols, fieldRows, drawBackground) {
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
@@ -8,6 +8,8 @@ class Blocks {
       height,
       cols: 4,
       rows: 4,
+      fieldCols,
+      fieldRows,
     };
     this.drawBackground = drawBackground;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
@@ -31,6 +33,7 @@ class Blocks {
   }
 
   move() {
+    if (!this.canMove(0, 1)) { return; }
     this.y += 1;
   }
 
@@ -52,26 +55,6 @@ class Blocks {
     );
   }
 
-  setKeyEvent() {
-    document.body.onkeydown = (e) => {
-      switch (e.keyCode) {
-        case 37:
-          this.x -= 1;
-          break;
-        case 38:
-          this.rotate();
-          break;
-        case 39:
-          this.x += 1;
-          break;
-        case 40:
-          this.y += 1;
-      }
-      this.drawBackground();
-      this.draw();
-    };
-  }
-
   rotate() {
     const rotatePattern = [];
     for (let y = 0; y < this.setting.cols; y += 1) {
@@ -81,6 +64,47 @@ class Blocks {
       }
     }
     this.pattern = rotatePattern;
+  }
+
+  setKeyEvent() {
+    document.body.onkeydown = (e) => {
+      switch (e.keyCode) {
+        case 37:
+          if (!this.canMove(-1, 0)) { break; }
+          this.x -= 1;
+          break;
+        case 38:
+          this.rotate();
+          break;
+        case 39:
+          if (!this.canMove(1, 0)) { break; }
+          this.x += 1;
+          break;
+        case 40:
+          if (!this.canMove(0, 1)) { break; }
+          this.y += 1;
+          break;
+      }
+      this.drawBackground();
+      this.draw();
+    };
+  }
+
+  canMove(xDir, yDir) {
+    const nextX = this.x + xDir;
+    const nextY = this.y + yDir;
+    for (let y = 0; y < this.setting.cols; y += 1) {
+      for (let x = 0; x < this.setting.rows; x += 1) {
+        if (this.pattern[y][x]) {
+          if (nextX + x < 0
+            || nextX + x >= this.setting.fieldCols
+            || nextY + y >= this.setting.fieldRows) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   static blockPatterns() {
