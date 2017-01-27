@@ -7,7 +7,7 @@ class FieldBlocks {
       cols,
       rows,
     };
-    this.pattern = [];
+    this.pattern = this.newPattern();
   }
 
   move() {
@@ -31,5 +31,16 @@ class FieldBlocks {
       this.setting.blockWidth - 1,
       this.setting.blockHeight - 1,
     );
+  }
+
+  newPattern() {
+    const pattern = [];
+    for (let y = 0; y < this.setting.rows; y += 1) {
+      pattern[y] = [];
+      for(let x = 0; x < this.setting.cols; x += 1) {
+        pattern[y][x] = 0;
+      }
+    }
+    return pattern;
   }
 }

@@ -1,5 +1,5 @@
 class Blocks {
-  constructor(ctx, width, height, fieldCols, fieldRows, drawAll) {
+  constructor(ctx, width, height, fieldCols, fieldRows, drawAll, fieldBlocksPattern) {
     this.ctx = ctx;
     this.x = 3;
     this.y = -1;
@@ -11,6 +11,7 @@ class Blocks {
       fieldCols,
       fieldRows,
     };
+    this.fieldBlocksPattern = fieldBlocksPattern;
     this.drawAll = drawAll;
     this.id = Math.floor(Math.random() * Blocks.blockPatterns().length);
     this.pattern = this.newBlocks();
@@ -99,7 +100,8 @@ class Blocks {
         if (this.pattern[y][x]) {
           if (nextX + x < 0
             || nextX + x >= this.setting.fieldCols
-            || nextY + y >= this.setting.fieldRows) {
+            || nextY + y >= this.setting.fieldRows
+            || this.fieldBlocksPattern[nextY + y][nextX + x]) {
             return false;
           }
         }

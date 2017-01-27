@@ -18,19 +18,20 @@ class Tetris {
   }
 
   initGameObjects() {
+    const fieldsBlocks = new FieldBlocks(
+      this.ctx,
+      this.setting.width / this.setting.cols,
+      this.setting.height / this.setting.rows,
+      this.setting.cols,
+      this.setting.rows,
+    );
     this.gameObjects = {
-      blocks: this.newBlocks(),
-      fieldBlocks: new FieldBlocks(
-        this.ctx,
-        this.setting.width / this.setting.cols,
-        this.setting.height / this.setting.rows,
-        this.setting.cols,
-        this.setting.rows,
-      ),
+      blocks: this.newBlocks(fieldsBlocks.pattern),
+      fieldBlocks: fieldsBlocks,
     };
   }
 
-  newBlocks() {
+  newBlocks(fieldsBlocksPattern) {
     return new Blocks(
       this.ctx,
       this.setting.width / this.setting.cols,
@@ -38,6 +39,7 @@ class Tetris {
       this.setting.cols,
       this.setting.rows,
       this.drawAll.bind(this),
+      fieldsBlocksPattern,
     );
   }
 
@@ -68,8 +70,6 @@ class Tetris {
   fixBlocks() {
     if (this.gameObjects.blocks.canMove(0, 1)) { return; }
     this.gameObjects.blocks.pattern.forEach((cols, y) => {
-      this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y]
-        = this.gameObjects.fieldBlocks.pattern[y + this.gameObjects.blocks.y] || [];
       cols.forEach((val, x) => {
         if (val) {
           this.gameObjects.fieldBlocks
@@ -78,6 +78,6 @@ class Tetris {
         }
       });
     });
-    this.gameObjects.blocks = this.newBlocks();
+    this.gameObjects.blocks = this.newBlocks(this.gameObjects.fieldBlocks.pattern);
   }
 }
