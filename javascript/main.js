@@ -48,11 +48,6 @@ var Blocks = function () {
       this.ctx.fillRect(x * this.setting.blockWidth, y * this.setting.blockHeight, this.setting.blockWidth - 1, this.setting.blockHeight - 1);
       this.ctx.restore();
     }
-  }, {
-    key: 'hasBlock',
-    value: function hasBlock(x, y) {
-      return this.pattern[y][x] === 1;
-    }
   }]);
 
   return Blocks;

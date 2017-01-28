@@ -36,8 +36,4 @@ class Blocks {
     );
     this.ctx.restore();
   }
-
-  hasBlock(x, y) {
-    return (this.pattern[y][x] === 1);
-  }
 }
