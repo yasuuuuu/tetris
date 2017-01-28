@@ -30,7 +30,7 @@ class Tetris {
       this.setting.rows,
       this.setting.blockRows,
       this.drawAll.bind(this),
-      this.calcScore.bind(this),
+      this.addScore.bind(this),
     );
     this.gameObjects = {
       currentBlocks: this.newCurrentBlocks(fieldsBlocks.pattern),
@@ -85,8 +85,14 @@ class Tetris {
 
   drawBackground() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#000';
-    this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
+    this.ctx.save();
+    const linGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+    linGrad.addColorStop(0, '#F29492');
+    linGrad.addColorStop(0.5, '#114357');
+    linGrad.addColorStop(1, '#F29492');
+    this.ctx.fillStyle = linGrad;
+    this.ctx.fillRect(0, 0, this.setting.width, this.setting.height);
+    this.ctx.restore();
   }
 
   fixBlocks() {
@@ -104,7 +110,7 @@ class Tetris {
     this.drawAll();
   }
 
-  calcScore() {
+  addScore() {
     this.score += 1;
   }
 

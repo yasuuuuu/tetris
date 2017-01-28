@@ -43,7 +43,10 @@ var Blocks = function () {
       if (!block) {
         return;
       }
+      this.ctx.save();
+      this.ctx.fillStyle = '#fff';
       this.ctx.fillRect(x * this.setting.blockWidth, y * this.setting.blockHeight, this.setting.blockWidth - 1, this.setting.blockHeight - 1);
+      this.ctx.restore();
     }
   }, {
     key: 'hasBlock',
@@ -183,14 +186,14 @@ var CurrentBlocks = function (_Blocks) {
 var FieldBlocks = function (_Blocks2) {
   _inherits(FieldBlocks, _Blocks2);
 
-  function FieldBlocks(ctx, blockWidth, blockHeight, cols, rows, blockRows, drawAll, calcScore) {
+  function FieldBlocks(ctx, blockWidth, blockHeight, cols, rows, blockRows, drawAll, addScore) {
     _classCallCheck(this, FieldBlocks);
 
     var _this3 = _possibleConstructorReturn(this, (FieldBlocks.__proto__ || Object.getPrototypeOf(FieldBlocks)).call(this, ctx, blockWidth, blockHeight, cols, rows, drawAll));
 
     _this3.setting.blockRows = blockRows;
     _this3.pattern = _this3.newPattern();
-    _this3.calcScore = calcScore;
+    _this3.addScore = addScore;
     return _this3;
   }
 
@@ -202,7 +205,7 @@ var FieldBlocks = function (_Blocks2) {
           return elem === 1;
         })) {
           this.clearRows(y);
-          this.calcScore();
+          this.addScore();
         }
       }
     }
@@ -268,7 +271,7 @@ var Tetris = function () {
   }, {
     key: 'initGameObjects',
     value: function initGameObjects() {
-      var fieldsBlocks = new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.setting.blockRows, this.drawAll.bind(this), this.calcScore.bind(this));
+      var fieldsBlocks = new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.setting.blockRows, this.drawAll.bind(this), this.addScore.bind(this));
       this.gameObjects = {
         currentBlocks: this.newCurrentBlocks(fieldsBlocks.pattern),
         fieldBlocks: fieldsBlocks
@@ -321,8 +324,14 @@ var Tetris = function () {
     key: 'drawBackground',
     value: function drawBackground() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = '#000';
-      this.ctx.strokeRect(0, 0, this.setting.width, this.setting.height);
+      this.ctx.save();
+      var linGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+      linGrad.addColorStop(0, '#F29492');
+      linGrad.addColorStop(0.5, '#114357');
+      linGrad.addColorStop(1, '#F29492');
+      this.ctx.fillStyle = linGrad;
+      this.ctx.fillRect(0, 0, this.setting.width, this.setting.height);
+      this.ctx.restore();
     }
   }, {
     key: 'fixBlocks',
@@ -343,8 +352,8 @@ var Tetris = function () {
       this.drawAll();
     }
   }, {
-    key: 'calcScore',
-    value: function calcScore() {
+    key: 'addScore',
+    value: function addScore() {
       this.score += 1;
     }
   }, {

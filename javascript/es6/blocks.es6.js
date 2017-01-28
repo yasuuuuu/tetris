@@ -26,12 +26,15 @@ class Blocks {
 
   drawBlock(x, y, block) {
     if (!block) { return; }
+    this.ctx.save();
+    this.ctx.fillStyle = '#fff';
     this.ctx.fillRect(
       x * this.setting.blockWidth,
       y * this.setting.blockHeight,
       this.setting.blockWidth - 1,
       this.setting.blockHeight - 1,
     );
+    this.ctx.restore();
   }
 
   hasBlock(x, y) {
