@@ -24,15 +24,16 @@ class Tetris {
       this.setting.height / this.setting.rows,
       this.setting.cols,
       this.setting.rows,
+      this.drawAll.bind(this),
     );
     this.gameObjects = {
-      blocks: this.newBlocks(fieldsBlocks.pattern),
+      currentBlocks: this.newCurrentBlocks(fieldsBlocks.pattern),
       fieldBlocks: fieldsBlocks,
     };
   }
 
-  newBlocks(fieldsBlocksPattern) {
-    return new Blocks(
+  newCurrentBlocks(fieldsBlocksPattern) {
+    return new CurrentBlocks(
       this.ctx,
       this.setting.width / this.setting.cols,
       this.setting.height / this.setting.rows,
@@ -68,16 +69,16 @@ class Tetris {
   }
 
   fixBlocks() {
-    if (this.gameObjects.blocks.canMove(0, 1)) { return; }
-    this.gameObjects.blocks.pattern.forEach((cols, y) => {
+    if (this.gameObjects.currentBlocks.canMove(0, 1)) { return; }
+    this.gameObjects.currentBlocks.pattern.forEach((cols, y) => {
       cols.forEach((val, x) => {
         if (val) {
           this.gameObjects.fieldBlocks
-            .pattern[y + this.gameObjects.blocks.y][x + this.gameObjects.blocks.x]
-            = this.gameObjects.blocks.pattern[y][x];
+            .pattern[y + this.gameObjects.currentBlocks.y][x + this.gameObjects.currentBlocks.x]
+            = this.gameObjects.currentBlocks.pattern[y][x];
         }
       });
     });
-    this.gameObjects.blocks = this.newBlocks(this.gameObjects.fieldBlocks.pattern);
+    this.gameObjects.currentBlocks = this.newCurrentBlocks(this.gameObjects.fieldBlocks.pattern);
   }
 }

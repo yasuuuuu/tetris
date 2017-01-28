@@ -1,43 +1,32 @@
-class FieldBlocks {
-  constructor(ctx, blockWidth, blockHeight, cols, rows) {
-    this.ctx = ctx;
-    this.setting = {
-      blockWidth,
-      blockHeight,
-      cols,
-      rows,
-    };
+class FieldBlocks extends Blocks {
+  constructor(ctx, blockWidth, blockHeight, cols, rows, drawAll) {
+    super(ctx, blockWidth, blockHeight, cols, rows, drawAll);
     this.pattern = this.newPattern();
   }
 
   move() {
-  }
-
-  draw() {
-    for (let y = 0; y < this.setting.rows; y += 1) {
-      for (let x = 0; x < this.setting.cols; x += 1) {
-        if (this.pattern[y]) {
-          this.drawBlock(x, y, this.pattern[y][x]);
-        }
+    for (let y = this.setting.rows - 1; y >= 0; y -= 1) {
+      if (this.pattern[y].every(elem => (elem === 1))) {
+        this.clearRows(y);
       }
     }
   }
 
-  drawBlock(x, y, block) {
-    if (!block) { return; }
-    this.ctx.fillRect(
-      x * this.setting.blockWidth,
-      y * this.setting.blockHeight,
-      this.setting.blockWidth - 1,
-      this.setting.blockHeight - 1,
-    );
+  clearRows(row) {
+    for (let x = 0; x < this.setting.cols; x += 1) {
+      this.pattern[row][x] = 0;
+    }
+    for (let y = row - 1; y >= 0; y -= 1) {
+      this.pattern[y + 1] = this.pattern[y];
+    }
+    this.drawAll();
   }
 
   newPattern() {
     const pattern = [];
     for (let y = 0; y < this.setting.rows; y += 1) {
       pattern[y] = [];
-      for(let x = 0; x < this.setting.cols; x += 1) {
+      for (let x = 0; x < this.setting.cols; x += 1) {
         pattern[y][x] = 0;
       }
     }
