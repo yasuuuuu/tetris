@@ -87,9 +87,9 @@ class Tetris {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();
     const linGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-    linGrad.addColorStop(0, '#F29492');
-    linGrad.addColorStop(0.5, '#114357');
-    linGrad.addColorStop(1, '#F29492');
+    linGrad.addColorStop(0, '#41295a');
+    linGrad.addColorStop(0.5, '#2F0743');
+    linGrad.addColorStop(1, '#41295a');
     this.ctx.fillStyle = linGrad;
     this.ctx.fillRect(0, 0, this.setting.width, this.setting.height);
     this.ctx.restore();
