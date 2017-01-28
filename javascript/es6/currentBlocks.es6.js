@@ -1,6 +1,7 @@
 class CurrentBlocks extends Blocks {
-  constructor(ctx, blockWidth, blockHeight, fieldCols, fieldRows, drawAll, fieldBlocksPattern) {
-    super(ctx, blockWidth, blockHeight, 4, 4, drawAll);
+  constructor(ctx, blockWidth, blockHeight, blockCols, blockRows,
+    fieldCols, fieldRows, drawAll, fieldBlocksPattern) {
+    super(ctx, blockWidth, blockHeight, blockCols, blockRows, drawAll);
     this.x = 3;
     this.y = -1;
     this.setting.fieldCols = fieldCols;

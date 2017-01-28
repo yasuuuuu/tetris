@@ -1,13 +1,16 @@
 class FieldBlocks extends Blocks {
-  constructor(ctx, blockWidth, blockHeight, cols, rows, drawAll) {
+  constructor(ctx, blockWidth, blockHeight, cols, rows, blockRows, drawAll, calcScore) {
     super(ctx, blockWidth, blockHeight, cols, rows, drawAll);
+    this.setting.blockRows = blockRows;
     this.pattern = this.newPattern();
+    this.calcScore = calcScore;
   }
 
   move() {
     for (let y = this.setting.rows - 1; y >= 0; y -= 1) {
       if (this.pattern[y].every(elem => (elem === 1))) {
         this.clearRows(y);
+        this.calcScore();
       }
     }
   }
@@ -24,7 +27,7 @@ class FieldBlocks extends Blocks {
 
   newPattern() {
     const pattern = [];
-    for (let y = 0; y < this.setting.rows; y += 1) {
+    for (let y = -this.setting.blockRows; y < this.setting.rows; y += 1) {
       pattern[y] = [];
       for (let x = 0; x < this.setting.cols; x += 1) {
         pattern[y][x] = 0;

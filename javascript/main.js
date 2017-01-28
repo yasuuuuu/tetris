@@ -58,10 +58,10 @@ var Blocks = function () {
 var CurrentBlocks = function (_Blocks) {
   _inherits(CurrentBlocks, _Blocks);
 
-  function CurrentBlocks(ctx, blockWidth, blockHeight, fieldCols, fieldRows, drawAll, fieldBlocksPattern) {
+  function CurrentBlocks(ctx, blockWidth, blockHeight, blockCols, blockRows, fieldCols, fieldRows, drawAll, fieldBlocksPattern) {
     _classCallCheck(this, CurrentBlocks);
 
-    var _this = _possibleConstructorReturn(this, (CurrentBlocks.__proto__ || Object.getPrototypeOf(CurrentBlocks)).call(this, ctx, blockWidth, blockHeight, 4, 4, drawAll));
+    var _this = _possibleConstructorReturn(this, (CurrentBlocks.__proto__ || Object.getPrototypeOf(CurrentBlocks)).call(this, ctx, blockWidth, blockHeight, blockCols, blockRows, drawAll));
 
     _this.x = 3;
     _this.y = -1;
@@ -183,12 +183,14 @@ var CurrentBlocks = function (_Blocks) {
 var FieldBlocks = function (_Blocks2) {
   _inherits(FieldBlocks, _Blocks2);
 
-  function FieldBlocks(ctx, blockWidth, blockHeight, cols, rows, drawAll) {
+  function FieldBlocks(ctx, blockWidth, blockHeight, cols, rows, blockRows, drawAll, calcScore) {
     _classCallCheck(this, FieldBlocks);
 
     var _this3 = _possibleConstructorReturn(this, (FieldBlocks.__proto__ || Object.getPrototypeOf(FieldBlocks)).call(this, ctx, blockWidth, blockHeight, cols, rows, drawAll));
 
+    _this3.setting.blockRows = blockRows;
     _this3.pattern = _this3.newPattern();
+    _this3.calcScore = calcScore;
     return _this3;
   }
 
@@ -200,6 +202,7 @@ var FieldBlocks = function (_Blocks2) {
           return elem === 1;
         })) {
           this.clearRows(y);
+          this.calcScore();
         }
       }
     }
@@ -218,7 +221,7 @@ var FieldBlocks = function (_Blocks2) {
     key: 'newPattern',
     value: function newPattern() {
       var pattern = [];
-      for (var y = 0; y < this.setting.rows; y += 1) {
+      for (var y = -this.setting.blockRows; y < this.setting.rows; y += 1) {
         pattern[y] = [];
         for (var x = 0; x < this.setting.cols; x += 1) {
           pattern[y][x] = 0;
@@ -244,8 +247,11 @@ var Tetris = function () {
       width: 300,
       height: 600,
       cols: 10,
-      rows: 20
+      rows: 20,
+      blockCols: 4,
+      blockRows: 4
     };
+    this.score = 0;
     this.initCanvas(id);
     this.initGameObjects();
   }
@@ -257,33 +263,48 @@ var Tetris = function () {
       this.canvas.width = this.setting.width;
       this.canvas.height = this.setting.height;
       this.ctx = this.canvas.getContext('2d');
+      this.initInfo(this.canvas);
     }
   }, {
     key: 'initGameObjects',
     value: function initGameObjects() {
-      var fieldsBlocks = new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawAll.bind(this));
+      var fieldsBlocks = new FieldBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.setting.blockRows, this.drawAll.bind(this), this.calcScore.bind(this));
       this.gameObjects = {
         currentBlocks: this.newCurrentBlocks(fieldsBlocks.pattern),
         fieldBlocks: fieldsBlocks
       };
     }
   }, {
+    key: 'initInfo',
+    value: function initInfo(selector) {
+      var info = document.createElement('div');
+      info.setAttribute('id', 'info');
+      info.innerHTML = 'SCORE: ' + this.score * 100;
+      selector.parentNode.insertBefore(info, selector.nextSibling);
+      this.info = document.getElementById('info');
+    }
+  }, {
     key: 'newCurrentBlocks',
     value: function newCurrentBlocks(fieldsBlocksPattern) {
-      return new CurrentBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.cols, this.setting.rows, this.drawAll.bind(this), fieldsBlocksPattern);
+      return new CurrentBlocks(this.ctx, this.setting.width / this.setting.cols, this.setting.height / this.setting.rows, this.setting.blockCols, this.setting.blockRows, this.setting.cols, this.setting.rows, this.drawAll.bind(this), fieldsBlocksPattern);
     }
   }, {
     key: 'play',
     value: function play() {
       var _this4 = this;
 
-      setInterval(function () {
+      var timerId = setInterval(function () {
         _this4.drawBackground();
         Object.keys(_this4.gameObjects).forEach(function (key) {
           _this4.gameObjects[key].move();
           _this4.gameObjects[key].draw();
           _this4.fixBlocks();
         });
+        _this4.drawInfo();
+        if (_this4.isGameOver()) {
+          clearInterval(timerId);
+          _this4.drawInfo('GAME OVER');
+        }
       }, 500);
     }
   }, {
@@ -319,6 +340,24 @@ var Tetris = function () {
         });
       });
       this.gameObjects.currentBlocks = this.newCurrentBlocks(this.gameObjects.fieldBlocks.pattern);
+      this.drawAll();
+    }
+  }, {
+    key: 'calcScore',
+    value: function calcScore() {
+      this.score += 1;
+    }
+  }, {
+    key: 'drawInfo',
+    value: function drawInfo(message) {
+      this.info.innerHTML = 'SCORE: ' + this.score * 100 + ' ' + (message || '');
+    }
+  }, {
+    key: 'isGameOver',
+    value: function isGameOver() {
+      return this.gameObjects.fieldBlocks.pattern[0].some(function (elem) {
+        return elem === 1;
+      });
     }
   }]);
 

@@ -5,7 +5,10 @@ class Tetris {
       height: 600,
       cols: 10,
       rows: 20,
+      blockCols: 4,
+      blockRows: 4,
     };
+    this.score = 0;
     this.initCanvas(id);
     this.initGameObjects();
   }
@@ -15,6 +18,7 @@ class Tetris {
     this.canvas.width = this.setting.width;
     this.canvas.height = this.setting.height;
     this.ctx = this.canvas.getContext('2d');
+    this.initInfo(this.canvas);
   }
 
   initGameObjects() {
@@ -24,7 +28,9 @@ class Tetris {
       this.setting.height / this.setting.rows,
       this.setting.cols,
       this.setting.rows,
+      this.setting.blockRows,
       this.drawAll.bind(this),
+      this.calcScore.bind(this),
     );
     this.gameObjects = {
       currentBlocks: this.newCurrentBlocks(fieldsBlocks.pattern),
@@ -32,11 +38,21 @@ class Tetris {
     };
   }
 
+  initInfo(selector) {
+    const info = document.createElement('div');
+    info.setAttribute('id', 'info');
+    info.innerHTML = `SCORE: ${this.score * 100}`;
+    selector.parentNode.insertBefore(info, selector.nextSibling);
+    this.info = document.getElementById('info');
+  }
+
   newCurrentBlocks(fieldsBlocksPattern) {
     return new CurrentBlocks(
       this.ctx,
       this.setting.width / this.setting.cols,
       this.setting.height / this.setting.rows,
+      this.setting.blockCols,
+      this.setting.blockRows,
       this.setting.cols,
       this.setting.rows,
       this.drawAll.bind(this),
@@ -45,13 +61,18 @@ class Tetris {
   }
 
   play() {
-    setInterval(() => {
+    const timerId = setInterval(() => {
       this.drawBackground();
       Object.keys(this.gameObjects).forEach((key) => {
         this.gameObjects[key].move();
         this.gameObjects[key].draw();
         this.fixBlocks();
       });
+      this.drawInfo();
+      if (this.isGameOver()) {
+        clearInterval(timerId);
+        this.drawInfo('GAME OVER');
+      }
     }, 500);
   }
 
@@ -80,5 +101,18 @@ class Tetris {
       });
     });
     this.gameObjects.currentBlocks = this.newCurrentBlocks(this.gameObjects.fieldBlocks.pattern);
+    this.drawAll();
+  }
+
+  calcScore() {
+    this.score += 1;
+  }
+
+  drawInfo(message) {
+    this.info.innerHTML = `SCORE: ${this.score * 100} ${message || ''}`;
+  }
+
+  isGameOver() {
+    return this.gameObjects.fieldBlocks.pattern[0].some(elem => (elem === 1));
   }
 }
